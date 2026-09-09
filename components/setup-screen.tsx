@@ -5,7 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Pencil, Trash2, Check, X } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { LetterWheel } from '@/components/letter-wheel';
+import { Eye, Pencil, Trash2, Check, X } from 'lucide-react';
 import type { GameRecord } from '@/hooks/use-records';
 
 interface SetupScreenProps {
@@ -22,6 +30,7 @@ export function SetupScreen({ onStartGame, records, onUpdateRecord, onDeleteReco
   const [editName, setEditName] = useState('');
   const [editScore, setEditScore] = useState('');
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<GameRecord | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -183,6 +192,17 @@ export function SetupScreen({ onStartGame, records, onUpdateRecord, onDeleteReco
                       <span className="text-sm font-bold text-foreground tabular-nums">
                         {record.score}
                       </span>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => setSelectedRecord(record)}
+                        disabled={!record.letters?.length}
+                        title={record.letters?.length ? 'Harf çemberini görüntüle' : 'Bu kayıt için çember kaydı yok'}
+                        aria-label={record.letters?.length ? 'Harf çemberini görüntüle' : 'Bu kayıt için çember kaydı yok'}
+                        className="h-7 w-7 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                      </Button>
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Button
                           size="icon"
@@ -213,6 +233,22 @@ export function SetupScreen({ onStartGame, records, onUpdateRecord, onDeleteReco
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={selectedRecord !== null} onOpenChange={(open) => !open && setSelectedRecord(null)}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>{selectedRecord?.contestantName} — Harf Çemberi</DialogTitle>
+            <DialogDescription>
+              Eski oyundaki doğru, yanlış ve pas durumlarını inceleyin.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedRecord?.letters?.length ? (
+            <div className="flex justify-center overflow-auto py-2">
+              <LetterWheel letters={selectedRecord.letters} currentIndex={-1} />
+            </div>
+          ) : null}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

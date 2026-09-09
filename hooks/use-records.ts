@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import type { LetterStatus } from '@/lib/game-types';
 
 export interface GameRecord {
   id: string;
   contestantName: string;
   score: number;
   createdAt: number;
+  letters?: LetterStatus[];
 }
 
 const STORAGE_KEY = 'harf-cemberi-records';
@@ -43,12 +45,13 @@ export function useRecords() {
   }, [records, isLoaded]);
 
   // Add a new record
-  const addRecord = useCallback((contestantName: string, score: number) => {
+  const addRecord = useCallback((contestantName: string, score: number, letters: LetterStatus[]) => {
     const newRecord: GameRecord = {
       id: `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
       contestantName,
       score,
       createdAt: Date.now(),
+      letters: letters.map((letter) => ({ ...letter })),
     };
     setRecords((prev) => [...prev, newRecord]);
   }, []);

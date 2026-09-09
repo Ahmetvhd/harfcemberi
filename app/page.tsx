@@ -35,7 +35,7 @@ export default function Home() {
   // Save record when game finishes
   useEffect(() => {
     if (gameState?.isFinished && !hasRecordedRef.current) {
-      addRecord(gameState.contestantName, gameState.score);
+      addRecord(gameState.contestantName, gameState.score, gameState.letters);
       hasRecordedRef.current = true;
     }
   }, [gameState?.isFinished, gameState?.contestantName, gameState?.score, addRecord]);
